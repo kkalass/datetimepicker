@@ -9,10 +9,72 @@ buildscript {
 }
 
 apply plugin: 'android-library'
+apply plugin: 'maven'
+apply plugin: 'signing'
+
+version = "0.2.0"
+group = "de.kalass"
 
 repositories {
     mavenCentral()
 }
+
+configurations {
+    archives {
+        extendsFrom configurations.default
+    }
+}
+
+signing {
+    required { has("release") && gradle.taskGraph.hasTask("uploadArchives") }
+    sign configurations.archives
+}
+
+uploadArchives {
+    configuration = configurations.archives
+    repositories.mavenDeployer {
+        repository(url: "file://localhost/Users/klas/localMavenRepo/")
+
+        //beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+
+        pom.project {
+            name 'DateTimePicker Compatibility Library'
+            packaging 'aar'
+            description 'DateTimePicker is a library which contains the beautiful DatePicker and TimePicker that can be seen in the new Google Agenda app'
+            url 'https://github.com/kkalass/datetimepicker-library.git'
+
+            scm {
+                url 'scm:git@github.com:kkalass/datetimepicker-library.git'
+                connection 'scm:git@github.com:kkalass/datetimepicker-library.git'
+                developerConnection 'scm:git@github.com:kkalass/datetimepicker-library.git'
+            }
+
+            licenses {
+                license {
+                    name 'Apache License, Version 2.0'
+                    url 'http://www.apache.org/licenses/LICENSE-2.0'
+                    distribution 'repo'
+                }
+            }
+
+            developers {
+                developer {
+                    id 'biboune'
+                }
+                developer {
+                    id 'edisonw'
+                }
+                developer {
+                    id 'kkalass'
+                    name 'Klas Kalass'
+                    email 'klas.kalass@web.de'
+		}
+            }
+        }
+    }
+}
+
 
 dependencies {
     compile 'com.android.support:support-v4:18.0.0'
